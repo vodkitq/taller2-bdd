@@ -14,6 +14,11 @@ router.put('/copias/:id/deshabilitar', apiController.deshabilitarCopia);
 // 4. Actualizar el precio de un libro
 router.put('/libros/:id/precio', apiController.actualizarPrecioLibro);
 
-// 5 al 16. Otras rutas para las funcionalidades restantes
+// 5. Desactivar un usuario
+router.put('/usuarios/:id/desactivar', apiController.desactivarUsuario);
+
+// 6. Registrar nuevo prestamo/venta
+router.post('/transacciones', apiController.registrarTransaccion);
+
 
 module.exports = router;

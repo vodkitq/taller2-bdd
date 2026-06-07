@@ -45,9 +45,58 @@ const apiController = {
             await db.query(`UPDATE Libro SET precio = ? WHERE id = ?`, [nuevo_precio, id]);
             res.status(200).json({ mensaje: "Precio actualizado", nuevo_precio });
         } catch (error) { res.status(500).json({ error: error.message }); }
-    }
+    },
     
-    // Continuar del 5 al 16 con las demás funcionalidades...
+    // 5. Desactivar un usuario
+    desactivarUsuario: async (req, res) => {
+        try {
+            const {id}= req.params;
+            const query = `UPDATE Usuario SET estado = 'Desactivado' WHERE id = ?`;
+            const [result] = await db.query(query, [id]);
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ mensaje: "Usuario no encontrado" });
+            }
+            res.status(200).json({ mensaje: "Usuario desactivado" });
+        } catch (error) { 
+            res.status(500).json({ error: error.message }); 
+        }
+    },
+
+    // 6. Registrar nuevo prestamo/venta
+    registrarTransaccion: async (req, res) => {
+        try{
+            const { usuario_id, libro_id, bibliotecaria_id, tipo } = req.body;
+            const connection = await db.beginTransaction();
+            const [[libro]] = await connection.execute("SELECT precio, edad_sugerida, stock FROM libros WHERE id_libro = ?", [libro_id]);
+            const [[usuario]] = await connection.execute("SELECT edad FROM usuarios WHERE id_usuario = ?", [usuario_id]);
+            if (usuario.edad < libro.edad_sugerida) {
+                return res.status(400).json({ mensaje: "Usuario no cumple con la edad sugerida" });
+            }
+            const fechaActual = new Date();
+            let precioFinal = libro.precio;
+            let bono = 0;
+            if (tipo === "Venta") {
+                bono = calcularBonoVenta(libro.precio, fechaActual);
+            } else if (tipo === "Prestamo") {
+                bono = calcularBonoPrestamo(libro.precio, fechaActual);
+            }else {
+                return res.status(400).json({ mensaje: "Tipo de transacción inválido" });
+            }
+            const semestre = fechaActual.getMonth() < 6 ? 1 : 2;
+            const insertQuery = `INSERT INTO transacciones (usuario_id, libro_id, bibliotecaria_id, tipo, fecha, semestre, precio_final) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+            await connection.execute(insertQuery, [usuario_id, libro_id, bibliotecaria_id, tipo, fechaActual, semestre, precioFinal]);
+            await connection.execute("UPDATE bibliotecarias SET bono = bono + ? WHERE bibliotecaria_id = ?", [bono, bibliotecaria_id]);
+            await connection.execute("UPDATE libros SET stock = stock - 1 WHERE id_libro = ?", [libro_id]);
+            await connection.commit();
+            res.status(200).json({ mensaje: "Transacción exitosa", bono_ganado: bono });
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
+        } finally {
+            connection.release();
+        }
+    },
+
+    // 7. Consultar el detalle del préstamo/venta de un usuario específico para una fecha determinada.
 };
 
 module.exports = apiController;
