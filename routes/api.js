@@ -20,5 +20,10 @@ router.put('/usuarios/:id/desactivar', apiController.desactivarUsuario);
 // 6. Registrar nuevo prestamo/venta
 router.post('/transacciones', apiController.registrarTransaccion);
 
+// 7. Consultar el detalle del préstamo/venta de un usuario específico para una fecha determinada.
+router.get('/transacciones/detalle', apiController.consultaDetalle);
+
+// 8. Listar usuarios y biblitecarias
+router.get('/usuariosBibliotecarias', apiController.listarUsuariosBibliotecarias);
 
 module.exports = router;

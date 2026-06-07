@@ -97,6 +97,21 @@ const apiController = {
     },
 
     // 7. Consultar el detalle del préstamo/venta de un usuario específico para una fecha determinada.
+    consultaDetalle: async (req, res) => {
+        try{
+            const { usuario_id, fecha } = req.query;
+            const query = `SELECT t.tipo, t.fecha, l.nombre AS libro, l.autor, t.precio_final
+                            FROM transacciones t
+                            JOIN libros l ON t.libro_id = l.id_libro
+                            WHERE t.usuario_id = ? AND DATE(t.fecha) = ?`;
+            const[detalles] = await db.execute(query, [usuario_id, fecha]);
+            res.status(200).json({ detalles });
+        } catch (error) {
+            res.status(500).json({ error: "Error al consultar el detalle de la transacción" });
+        }
+    },
+
+
 };
 
 module.exports = apiController;
