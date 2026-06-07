@@ -26,4 +26,11 @@ router.get('/transacciones/detalle', apiController.consultaDetalle);
 // 8. Listar usuarios y biblitecarias
 router.get('/usuariosBibliotecarias', apiController.listarUsuariosBibliotecarias);
 
+// 9. Listar usuarios con al menos un préstamo/venta.
+router.get('/usuariosConTransacciones', apiController.listarUsuariosConTransacciones);
+
+// 10. Listar todos los clientes.
+router.get('/clientes', apiController.listarClientes);
+
+// falta agregar los puntos del 11 al 16
 module.exports = router;

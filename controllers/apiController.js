@@ -110,8 +110,42 @@ const apiController = {
             res.status(500).json({ error: "Error al consultar el detalle de la transacción" });
         }
     },
+    // 8. Listar usuarios y biblitecarias
+    listarUsuariosBibliotecarias: async (req, res) => {
+        try {
+            const [usuarios]= await db.execute("SELECT usuario_id, nombre, rut, direccion FROM usuarios");
+            const [bibliotecarias]= await db.execute("SELECT bibliotecaria_id, nombre, rut, estado FROM bibliotecarias");
+            res.json({ usuarios: usuarios, bibliotecarias: bibliotecarias });
+        } catch (error) {
+            res.status(500).json({ error: "Error al listar usuarios y bibliotecarias" });
+        }
+    },
 
+    // 9. Listar usuarios con al menos un préstamo/venta.
+    listarUsuariosConTransacciones: async (req, res) => {
+        try {
+            const query = `SELECT u.usuario_id, u.nombre, COUNT(t.transaccion_id) AS total_transacciones
+                            FROM usuarios u
+                            JOIN transacciones t ON u.usuario_id = t.usuario_id
+                            GROUP BY u.usuario_id, u.nombre
+                            HAVING total_transacciones > 0`;
+            const [usuarios] = await db.execute(query);
+            res.status(200).json({ usuarios });
+        } catch (error) {
+            res.status(500).json({ error: "Error al listar usuarios con transacciones" });
+        }
+    },
 
+    //10. Listar todos los clientes.
+    listadoTodosClientes: async (req, res) => {
+        try {
+            const query = `SELECT usuario_id, nombre, rut, edad, direccion FROM usuarios`;
+            const [clientes] = await db.execute(query);
+            res.status(200).json({ clientes });
+        } catch (error) {
+            res.status(500).json({ error: "Error al listar clientes" });
+        }
+    }
 };
 
 module.exports = apiController;
