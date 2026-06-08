@@ -6,3 +6,5 @@ node_modules/
 
 # Archivos de log de npm (por si ocurren errores)
 npm-debug.log
+
+.env

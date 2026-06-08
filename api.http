@@ -1,0 +1,98 @@
+# REQUIERE LA EXTENSIÓN REST CLIENT PARA VISUAL STUDIO CODE
+
+### ==========================================
+### 1. Gestión de Libros
+### ==========================================
+
+### 1. Registrar un nuevo libro
+POST http://localhost:3000/api/libros
+Content-Type: application/json
+
+{
+  "nombre": "El camino del programador",
+  "autor": "John Doe",
+  "editorial": "Tech Books",
+  "genero": "Ficción",
+  "edad_sugerida": 18,
+  "precio": 30000,
+  "fecha_recepcion": "2026-06-07"
+}
+
+### 4. Actualizar el precio de un libro (ID 1)
+PUT http://localhost:3000/api/libros/1/precio
+Content-Type: application/json
+
+{
+  "nuevo_precio": 50000
+}
+
+### 11. Listar libros disponibles
+GET http://localhost:3000/api/libros/disponibles
+
+### 12. Listar libros recientes (semana actual)
+GET http://localhost:3000/api/libros/recientes
+
+### ==========================================
+### 2. Gestión de Usuarios
+### ==========================================
+
+### 2. Registrar un nuevo usuario
+POST http://localhost:3000/api/usuarios
+Content-Type: application/json
+
+{
+  "rut": "19.876.543-2",
+  "nombre": "Diego Fuentes",
+  "edad": 21,
+  "direccion": "Angamos 0610, Antofagasta"
+}
+
+### 5. Desactivar un usuario (ID 1)
+PUT http://localhost:3000/api/usuarios/1/desactivar
+
+### 8. Listar usuarios y bibliotecarias
+GET http://localhost:3000/api/usuariosBibliotecarias
+
+### 9. Listar usuarios con al menos un préstamo/venta
+GET http://localhost:3000/api/usuariosConTransacciones
+
+### 10. Listar todos los clientes
+GET http://localhost:3000/api/clientes
+
+### ==========================================
+### 3. Gestión de Copias
+### ==========================================
+
+### 3. Deshabilitar una copia (ID 1)
+PUT http://localhost:3000/api/copias/1/deshabilitar
+
+### 13. Incrementar stock (Añadir copia al libro ID 1)
+POST http://localhost:3000/api/libros/1/copias
+
+### ==========================================
+### 4. Transacciones y Reportes
+### ==========================================
+
+### 6. Registrar Transacción (Venta libro 1, copia 1)
+POST http://localhost:3000/api/transacciones
+Content-Type: application/json
+
+{
+  "usuario_id": 1,
+  "libro_id": 1,
+  "copia_id": 1,
+  "bibliotecaria_id": 1,
+  "tipo": "Venta"
+}
+
+### 7. Consultar detalle de préstamo/venta
+GET http://localhost:3000/api/transacciones/detalle?usuario_id=1&fecha=2026-06-07
+
+### 14. Cantidad de libros vendidos año actual
+GET http://localhost:3000/api/transacciones/ventas/ano-actual
+
+### 15. Top 10 libros Ficción 2026 (1er semestre)
+GET http://localhost:3000/api/reportes/top-ficcion-2026
+
+### 16. Menos prestados Comedia 2025 (2do semestre)
+GET http://localhost:3000/api/reportes/menos-prestados-comedia-2025
